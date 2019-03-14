@@ -1,12 +1,16 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net461;uap10.0.16299;MonoAndroid81;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;Xamarin.WatchOS10;tizen40;netstandard2.0</TargetFrameworks>
+    <!--TargetFrameworks>net461;uap10.0.16299;MonoAndroid81;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;Xamarin.WatchOS10;tizen40;netstandard2.0</TargetFrameworks-->
+    <TargetFrameworks>net461</TargetFrameworks>
     <AssemblyName>Splat</AssemblyName>
     <RootNamespace>Splat</RootNamespace>
     <Authors>Paul Betts</Authors>
     <Description>A library to make things cross-platform that should be</Description>
-    <PackageId>Splat</PackageId>
+    <PackageId>Splat.StrongNamed</PackageId>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>sirlan.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,13 +19,13 @@
     <None Include="Colors\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+  <!--ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
 
     <Compile Include="Platforms\ReflectionStubs.cs" />    
-  </ItemGroup>  
+  </ItemGroup-->  
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
     <Compile Include="Platforms\net461\**\*.cs" />
@@ -37,7 +41,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">  
+  <!--ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">  
     <Compile Include="Platforms\WinRT\**\*.cs" />
     <Compile Include="Platforms\ReflectionStubs.cs" />
     <Compile Include="Platforms\PlatformModeDetector.cs" />
@@ -86,7 +90,7 @@
   <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
     <Compile Include="Platforms\Tizen\**\*.cs" />
     <Compile Include="Platforms\PlatformModeDetector.cs" />
-  </ItemGroup>
+  </ItemGroup-->
 
   <ItemGroup>
     <Compile Remove="Colors\SplatColor.KnownColors.cs" />
