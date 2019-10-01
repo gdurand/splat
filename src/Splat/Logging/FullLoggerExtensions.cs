@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Splat
 {
@@ -19,6 +20,16 @@ namespace Splat
         /// <param name="function">The function to evaluate if Debug logging is enabled.</param>
         public static void Debug(this IFullLogger logger, Func<string> function)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsDebugEnabled)
             {
                 logger.Debug(function.Invoke());
@@ -33,6 +44,16 @@ namespace Splat
         /// <param name="function">The function to evaluate if Debug logging is enabled.</param>
         public static void Debug<T>(this IFullLogger logger, Func<string> function)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsDebugEnabled)
             {
                 logger.Debug<T>(function.Invoke());
@@ -47,9 +68,21 @@ namespace Splat
         /// <param name="exception">A exception to log about.</param>
         public static void DebugException(this IFullLogger logger, Func<string> function, Exception exception)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsDebugEnabled)
             {
-                logger.Debug(function.Invoke(), exception);
+#pragma warning disable CS0618 // Type or member is obsolete
+                logger.DebugException(function.Invoke(), exception);
+#pragma warning restore CS0618 // Type or member is obsolete
             }
         }
 
@@ -60,6 +93,16 @@ namespace Splat
         /// <param name="function">The function to evaluate if Debug logging is enabled.</param>
         public static void Info(this IFullLogger logger, Func<string> function)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsInfoEnabled)
             {
                 logger.Info(function.Invoke());
@@ -74,6 +117,16 @@ namespace Splat
         /// <param name="function">The function to evaluate if Debug logging is enabled.</param>
         public static void Info<T>(this IFullLogger logger, Func<string> function)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsInfoEnabled)
             {
                 logger.Info<T>(function.Invoke());
@@ -88,9 +141,21 @@ namespace Splat
         /// <param name="exception">A exception to log about.</param>
         public static void InfoException(this IFullLogger logger, Func<string> function, Exception exception)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsInfoEnabled)
             {
-                logger.Info(function.Invoke(), exception);
+#pragma warning disable CS0618 // Type or member is obsolete
+                logger.InfoException(function.Invoke(), exception);
+#pragma warning restore CS0618 // Type or member is obsolete
             }
         }
 
@@ -101,6 +166,16 @@ namespace Splat
         /// <param name="function">The function to evaluate if Warn logging is enabled.</param>
         public static void Warn(this IFullLogger logger, Func<string> function)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsWarnEnabled)
             {
                 logger.Warn(function.Invoke());
@@ -115,6 +190,16 @@ namespace Splat
         /// <param name="function">The function to evaluate if Warn logging is enabled.</param>
         public static void Warn<T>(this IFullLogger logger, Func<string> function)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsWarnEnabled)
             {
                 logger.Warn<T>(function.Invoke());
@@ -129,9 +214,21 @@ namespace Splat
         /// <param name="exception">A exception to log about.</param>
         public static void WarnException(this IFullLogger logger, Func<string> function, Exception exception)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsWarnEnabled)
             {
-                logger.Warn(function.Invoke(), exception);
+#pragma warning disable CS0618 // Type or member is obsolete
+                logger.WarnException(function.Invoke(), exception);
+#pragma warning restore CS0618 // Type or member is obsolete
             }
         }
 
@@ -142,6 +239,16 @@ namespace Splat
         /// <param name="function">The function to evaluate if Error logging is enabled.</param>
         public static void Error(this IFullLogger logger, Func<string> function)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsErrorEnabled)
             {
                 logger.Error(function.Invoke());
@@ -156,6 +263,16 @@ namespace Splat
         /// <param name="function">The function to evaluate if Error logging is enabled.</param>
         public static void Error<T>(this IFullLogger logger, Func<string> function)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsErrorEnabled)
             {
                 logger.Error<T>(function.Invoke());
@@ -170,9 +287,21 @@ namespace Splat
         /// <param name="exception">A exception to log about.</param>
         public static void ErrorException(this IFullLogger logger, Func<string> function, Exception exception)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsErrorEnabled)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 logger.ErrorException(function.Invoke(), exception);
+#pragma warning restore CS0618 // Type or member is obsolete
             }
         }
 
@@ -183,6 +312,16 @@ namespace Splat
         /// <param name="function">The function to evaluate if Fatal logging is enabled.</param>
         public static void Fatal(this IFullLogger logger, Func<string> function)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsFatalEnabled)
             {
                 logger.Fatal(function.Invoke());
@@ -197,6 +336,16 @@ namespace Splat
         /// <param name="function">The function to evaluate if Fatal logging is enabled.</param>
         public static void Fatal<T>(this IFullLogger logger, Func<string> function)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsFatalEnabled)
             {
                 logger.Fatal<T>(function.Invoke());
@@ -211,9 +360,21 @@ namespace Splat
         /// <param name="exception">A exception to log about.</param>
         public static void FatalException(this IFullLogger logger, Func<string> function, Exception exception)
         {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (function is null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+
             if (logger.IsFatalEnabled)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 logger.ErrorException(function.Invoke(), exception);
+#pragma warning restore CS0618 // Type or member is obsolete
             }
         }
     }

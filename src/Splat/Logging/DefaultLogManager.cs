@@ -12,7 +12,7 @@ namespace Splat
     /// This log manager will cache the loggers for each type,
     /// This will use the default registered <see cref="ILogger"/> inside the <see cref="Locator"/>.
     /// </summary>
-    public class DefaultLogManager : ILogManager
+    public sealed class DefaultLogManager : ILogManager
     {
         private static readonly IFullLogger _nullLogger = new WrappingFullLogger(new NullLogger());
         private readonly MemoizingMRUCache<Type, IFullLogger> _loggerCache;
@@ -21,7 +21,7 @@ namespace Splat
         /// Initializes a new instance of the <see cref="DefaultLogManager"/> class.
         /// </summary>
         /// <param name="dependencyResolver">A dependency resolver for testing purposes, will use the default Locator if null.</param>
-        public DefaultLogManager(IDependencyResolver dependencyResolver = null)
+        public DefaultLogManager(IReadonlyDependencyResolver dependencyResolver = null)
         {
             dependencyResolver = dependencyResolver ?? Locator.Current;
 

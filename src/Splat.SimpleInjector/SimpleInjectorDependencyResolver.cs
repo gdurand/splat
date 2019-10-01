@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SimpleInjector;
 
 namespace Splat.SimpleInjector
@@ -12,8 +13,8 @@ namespace Splat.SimpleInjector
     /// <summary>
     /// Simple Injector implementation for <see cref="IMutableDependencyResolver"/>.
     /// </summary>
-    /// <seealso cref="Splat.IMutableDependencyResolver" />
-    public class SimpleInjectorDependencyResolver : IMutableDependencyResolver
+    /// <seealso cref="Splat.IDependencyResolver" />
+    public class SimpleInjectorDependencyResolver : IDependencyResolver
     {
         private Container _container;
 
@@ -27,11 +28,20 @@ namespace Splat.SimpleInjector
         }
 
         /// <inheritdoc />
-        public object GetService(Type serviceType, string contract = null) => _container.GetInstance(serviceType);
+        public object GetService(Type serviceType, string contract = null)
+        {
+            return _container.GetInstance(serviceType);
+        }
 
         /// <inheritdoc />
         public IEnumerable<object> GetServices(Type serviceType, string contract = null) =>
             _container.GetAllInstances(serviceType);
+
+        /// <inheritdoc />
+        public bool HasRegistration(Type serviceType, string contract = null)
+        {
+            return _container.GetCurrentRegistrations().Any(x => x.ServiceType == serviceType);
+        }
 
         /// <inheritdoc />
         public void Register(Func<object> factory, Type serviceType, string contract = null) =>

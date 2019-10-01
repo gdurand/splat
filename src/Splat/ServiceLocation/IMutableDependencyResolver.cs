@@ -10,8 +10,16 @@ namespace Splat
     /// <summary>
     /// Represents a dependency resolver where types can be registered after setup.
     /// </summary>
-    public interface IMutableDependencyResolver : IDependencyResolver
+    public interface IMutableDependencyResolver
     {
+        /// <summary>
+        /// Check to see if a resolvers has a registration for a type.
+        /// </summary>
+        /// <param name="serviceType">The type to check for registration.</param>
+        /// <returns>Whether there is a registration for the type.</returns>
+        /// <param name="contract">A optional contract value which will indicates to only generate the value if this contract is specified.</param>
+        bool HasRegistration(Type serviceType, string contract = null);
+
         /// <summary>
         /// Register a function with the resolver which will generate a object
         /// for the specified service type.

@@ -15,7 +15,7 @@ namespace Splat
     /// GetService is always implemented via GetServices().LastOrDefault().
     /// This container is not thread safe.
     /// </summary>
-    public class FuncDependencyResolver : IMutableDependencyResolver
+    public class FuncDependencyResolver : IDependencyResolver
     {
         private readonly Func<Type, string, IEnumerable<object>> _innerGetServices;
         private readonly Action<Func<object>, Type, string> _innerRegister;
@@ -61,6 +61,13 @@ namespace Splat
         }
 
         /// <inheritdoc />
+        public bool HasRegistration(Type serviceType, string contract = null)
+        {
+            return _innerGetServices(serviceType, contract) != null;
+        }
+
+        /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "disp is Disposed in callback.")]
         public void Register(Func<object> factory, Type serviceType, string contract = null)
         {
             if (_innerRegister == null)

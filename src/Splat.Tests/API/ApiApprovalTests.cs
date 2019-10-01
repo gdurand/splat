@@ -10,11 +10,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using PublicApiGenerator;
 using Shouldly;
-using Splat;
 using Xunit;
 
 namespace Splat.Tests
@@ -36,6 +34,15 @@ namespace Splat.Tests
             CheckApproval(typeof(AssemblyFinder).Assembly);
         }
 
+        /// <summary>
+        /// Tests to make sure the splat project is approved.
+        /// </summary>
+        [Fact]
+        public void SplatUIProject()
+        {
+            CheckApproval(typeof(IPlatformModeDetector).Assembly);
+        }
+
         private static void CheckApproval(Assembly assembly, [CallerMemberName]string memberName = null, [CallerFilePath]string filePath = null)
         {
             var targetFrameworkName = Assembly.GetExecutingAssembly().GetTargetFrameworkName();
@@ -45,14 +52,45 @@ namespace Splat.Tests
             var approvedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.approved.txt");
             var receivedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.received.txt");
 
-            var approvedPublicApi = File.ReadAllText(approvedFileName);
+            string approvedPublicApi = string.Empty;
+
+            if (File.Exists(approvedFileName))
+            {
+                approvedPublicApi = File.ReadAllText(approvedFileName);
+            }
 
             var receivedPublicApi = Filter(ApiGenerator.GeneratePublicApi(assembly));
 
             if (!string.Equals(receivedPublicApi, approvedPublicApi, StringComparison.InvariantCulture))
             {
                 File.WriteAllText(receivedFileName, receivedPublicApi);
-                ShouldlyConfiguration.DiffTools.GetDiffTool().Open(receivedFileName, approvedFileName, true);
+                try
+                {
+                    ShouldlyConfiguration.DiffTools.GetDiffTool().Open(receivedFileName, approvedFileName, true);
+                }
+                catch (ShouldAssertException)
+                {
+                    var process = new Process
+                    {
+                      StartInfo = new ProcessStartInfo
+                      {
+                          Arguments = $"\"{approvedFileName}\" \"{receivedFileName}\"",
+                          UseShellExecute = false,
+                          RedirectStandardOutput = true,
+                          CreateNoWindow = true
+                      }
+                    };
+#if NET_461
+                    process.StartInfo.FileName = "FC";
+#else
+                    process.StartInfo.FileName = "diff";
+#endif
+                    process.Start();
+                    string output = process.StandardOutput.ReadToEnd();
+                    process.WaitForExit();
+
+                    throw new Exception("Invalid API configuration: " + Environment.NewLine + output);
+                }
             }
 
             Assert.Equal(approvedPublicApi, receivedPublicApi);

@@ -22,8 +22,15 @@ namespace Splat
         {
             var targetFrameworkAttribute = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
 
-            switch (targetFrameworkAttribute.FrameworkName)
+            return GetTargetFrameworkName(targetFrameworkAttribute.FrameworkName);
+        }
+
+        internal static string GetTargetFrameworkName(string frameworkName)
+        {
+            switch (frameworkName)
             {
+                case ".NETCoreApp,Version=v3.0":
+                    return "netcoreapp3.0";
                 case ".NETCoreApp,Version=v2.2":
                     return "netcoreapp2.2";
                 case ".NETCoreApp,Version=v2.1":

@@ -1,58 +1,22 @@
 trigger:
 - master
 - rel/*
+- preview/*
 
 pr:
 - master
 - rel/*
+- preview/*
 
-pool:
-  vmImage: vs2017-win2016
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: ReactiveUI/ReactiveUI.Cake.Recipe
+      endpoint: reactiveui
 
-steps:
-- task: BatchScript@1
-  inputs:
-    filename: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\Common7\\Tools\\VsDevCmd.bat"
-    arguments: -no_logo
-    modifyEnvironment: true
-  displayName: Setup Environment Variables
-
-- script: build.cmd
-  displayName: Build 
-  env:
-    SIGNCLIENT_SECRET: $(SignClientSecret)
-    SIGNCLIENT_USER: $(SignClientUser)
-    COVERALLS_TOKEN: $(COVERALLS_TOKEN)
-    ArtifactDirectory: $(System.DefaultWorkingDirectory)\Artifacts
-
-- task: PublishTestResults@2
-  displayName: Publish Test Results
-  inputs:
-    testResultsFormat: 'VSTest'
-    testResultsFiles: '**/testresults-*.trx' 
-    searchFolder: '$(System.DefaultWorkingDirectory)\artifacts\tests'
-
-- task: CopyFiles@2
-  inputs:
-    Contents: 'artifacts/packages/*.nupkg'
-    TargetFolder: '$(build.artifactstagingdirectory)\packages'
-    flattenFolders: true
-
-- task: PublishBuildArtifacts@1
-  displayName: Publish Package Artifacts
-  inputs:
-    pathToPublish: '$(build.artifactstagingdirectory)\packages'
-    artifactType: container
-    artifactName: Packages
-
-- task: CopyFiles@2
-  inputs:
-    Contents: 'artifacts/binaries/**/*'
-    TargetFolder: '$(build.artifactstagingdirectory)\binaries'
-
-- task: PublishBuildArtifacts@1
-  displayName: Publish Binaries
-  inputs:
-    pathToPublish: '$(build.artifactstagingdirectory)\binaries'
-    artifactType: container
-    artifactName: Binaries
+jobs:
+- template: Azure/azure-pipelines.yml@templates  # Template reference
+  parameters:
+    runMacBuild: false
+    

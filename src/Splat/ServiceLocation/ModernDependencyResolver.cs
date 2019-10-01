@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Splat
@@ -21,10 +22,10 @@ namespace Splat
     ///
     /// This container is not thread safe.
     /// </summary>
-    public class ModernDependencyResolver : IMutableDependencyResolver
+    public class ModernDependencyResolver : IDependencyResolver
     {
-        private Dictionary<Tuple<Type, string>, List<Func<object>>> _registry;
-        private Dictionary<Tuple<Type, string>, List<Action<IDisposable>>> _callbackRegistry;
+        private Dictionary<(Type serviceType, string contract), List<Func<object>>> _registry;
+        private Dictionary<(Type serviceType, string contract), List<Action<IDisposable>>> _callbackRegistry;
 
         private bool _isDisposed;
 
@@ -40,19 +41,27 @@ namespace Splat
         /// Initializes a new instance of the <see cref="ModernDependencyResolver"/> class.
         /// </summary>
         /// <param name="registry">A registry of services.</param>
-        protected ModernDependencyResolver(Dictionary<Tuple<Type, string>, List<Func<object>>> registry)
+        protected ModernDependencyResolver(Dictionary<(Type serviceType, string contract), List<Func<object>>> registry)
         {
             _registry = registry != null ?
                 registry.ToDictionary(k => k.Key, v => v.Value.ToList()) :
-                new Dictionary<Tuple<Type, string>, List<Func<object>>>();
+                new Dictionary<(Type serviceType, string contract), List<Func<object>>>();
 
-            _callbackRegistry = new Dictionary<Tuple<Type, string>, List<Action<IDisposable>>>();
+            _callbackRegistry = new Dictionary<(Type serviceType, string contract), List<Action<IDisposable>>>();
         }
 
         /// <inheritdoc />
+        public bool HasRegistration(Type serviceType, string contract = null)
+        {
+            var pair = GetKey(serviceType, contract);
+            return _registry.TryGetValue(pair, out var registrations) && registrations.Count > 0;
+        }
+
+        /// <inheritdoc />
+        [SuppressMessage("Design", "CA2000: Dispose object", Justification = "Disposed in callback.")]
         public void Register(Func<object> factory, Type serviceType, string contract = null)
         {
-            var pair = Tuple.Create(serviceType, contract ?? string.Empty);
+            var pair = GetKey(serviceType, contract);
             if (!_registry.ContainsKey(pair))
             {
                 _registry[pair] = new List<Func<object>>();
@@ -94,7 +103,7 @@ namespace Splat
         /// <inheritdoc />
         public object GetService(Type serviceType, string contract = null)
         {
-            var pair = Tuple.Create(serviceType, contract ?? string.Empty);
+            var pair = GetKey(serviceType, contract);
             if (!_registry.ContainsKey(pair))
             {
                 return default(object);
@@ -107,7 +116,7 @@ namespace Splat
         /// <inheritdoc />
         public IEnumerable<object> GetServices(Type serviceType, string contract = null)
         {
-            var pair = Tuple.Create(serviceType, contract ?? string.Empty);
+            var pair = GetKey(serviceType, contract);
             if (!_registry.ContainsKey(pair))
             {
                 return Enumerable.Empty<object>();
@@ -119,20 +128,26 @@ namespace Splat
         /// <inheritdoc />
         public void UnregisterCurrent(Type serviceType, string contract = null)
         {
-            var pair = Tuple.Create(serviceType, contract ?? string.Empty);
+            var pair = GetKey(serviceType, contract);
 
             if (!_registry.TryGetValue(pair, out var list))
             {
                 return;
             }
 
-            list.RemoveAt(list.Count - 1);
+            var position = list.Count - 1;
+            if (position < 0)
+            {
+                return;
+            }
+
+            list.RemoveAt(position);
         }
 
         /// <inheritdoc />
         public void UnregisterAll(Type serviceType, string contract = null)
         {
-            var pair = Tuple.Create(serviceType, contract ?? string.Empty);
+            var pair = GetKey(serviceType, contract);
 
             _registry[pair] = new List<Func<object>>();
         }
@@ -140,7 +155,7 @@ namespace Splat
         /// <inheritdoc />
         public IDisposable ServiceRegistrationCallback(Type serviceType, string contract, Action<IDisposable> callback)
         {
-            var pair = Tuple.Create(serviceType, contract ?? string.Empty);
+            var pair = GetKey(serviceType, contract);
 
             if (!_callbackRegistry.ContainsKey(pair))
             {
@@ -197,5 +212,10 @@ namespace Splat
 
             _isDisposed = true;
         }
+
+        private static (Type, string) GetKey(
+            Type serviceType,
+            string contract = null) =>
+            (serviceType, contract ?? string.Empty);
     }
 }

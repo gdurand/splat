@@ -26,15 +26,11 @@ namespace Splat
         public WrappingPrefixLogger(ILogger inner, Type callingType)
         {
             _inner = inner;
-            _prefix = $"{callingType.Name}: ";
+            _prefix = $"{callingType?.Name}: ";
         }
 
         /// <inheritdoc />
-        public LogLevel Level
-        {
-            get { return _inner.Level; }
-            set { _inner.Level = value; }
-        }
+        public LogLevel Level => _inner.Level;
 
         /// <inheritdoc />
         public void Write([Localizable(false)]string message, LogLevel logLevel)
@@ -43,9 +39,21 @@ namespace Splat
         }
 
         /// <inheritdoc />
+        public void Write(Exception exception, [Localizable(false)]string message, LogLevel logLevel)
+        {
+            _inner.Write(exception, _prefix + message, logLevel);
+        }
+
+        /// <inheritdoc />
         public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
         {
-            _inner.Write($"{type.Name}: {message}", type, logLevel);
+            _inner.Write($"{type?.Name}: {message}", type, logLevel);
+        }
+
+        /// <inheritdoc />
+        public void Write(Exception exception, [Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
+        {
+            _inner.Write(exception, $"{type?.Name}: {message}", type, logLevel);
         }
     }
 }
