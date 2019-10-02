@@ -1,14 +1,21 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
+		<!--
     <TargetFrameworks>MonoAndroid90;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;Xamarin.WatchOS10;tizen40;netcoreapp3.0;netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.16299</TargetFrameworks>
+		-->
+		<TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>Splat</RootNamespace>
     <Authors>.NET Foundation and Contributors</Authors>
     <Description>A library to make things cross-platform that should be</Description>
-    <PackageId>Splat.Drawing</PackageId>
+    <PackageId>Splat.Drawing.StrongNamed</PackageId>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <LangVersion>preview</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>9.0.5</Version>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>sirlan.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) and '$(OS)' == 'Windows_NT' ">
